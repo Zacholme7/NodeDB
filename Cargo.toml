@@ -8,6 +8,10 @@ name = "swap"
 path = "example/swap.rs"
 
 [[bin]]
+name = "swap-async"
+path = "example/swap_async.rs"
+
+[[bin]]
 name = "quote"
 path = "example/quote.rs"
 
@@ -24,7 +28,11 @@ name = "approval"
 path = "example/approval.rs"
 
 [[bin]]
-name = "get_balance_slot"
+name = "approval-async"
+path = "example/approval_async.rs"
+
+[[bin]]
+name = "get-balance-slot"
 path = "example/get_balance_slot.rs"
 
 [dependencies]
@@ -50,3 +58,4 @@ env_logger = "0.11.8"
 log = "0.4.27"
 revm = { version = "22.0.1", features = ["alloydb"] }
 foldhash = "0.1.5"
+async-trait = "0.1.88"

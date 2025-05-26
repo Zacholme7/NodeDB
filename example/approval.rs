@@ -4,13 +4,14 @@ use alloy_primitives::{address, U256};
 use alloy_sol_types::{sol, SolCall, SolValue};
 use eyre::anyhow;
 use eyre::Result;
+use node_db::NodeDBStorageSync;
 use node_db::RethBackend;
 use node_db::{InsertionType, NodeDB};
 use revm::context::result::ExecutionResult;
 use revm::primitives::{keccak256, TxKind};
 use revm::{Context, ExecuteCommitEvm, MainBuilder, MainContext};
 
-// Appoval and Allowance function signatures
+// Approval and Allowance function signatures
 sol!(
     #[sol(rpc)]
     contract ERC20Token {
@@ -19,8 +20,7 @@ sol!(
     }
 );
 
-#[tokio::main]
-async fn main() -> Result<()> {
+fn main() -> Result<()> {
     dotenv::dotenv().ok();
 
     // on chain addresses
@@ -69,16 +69,7 @@ async fn main() -> Result<()> {
         spender: uniswap_router,
     }
     .abi_encode();
-
-    let mut evm = Context::mainnet()
-        .with_db(&mut nodedb)
-        .modify_tx_chained(|tx| {
-            tx.caller = account;
-            tx.kind = TxKind::Call(weth);
-            tx.value = U256::ZERO;
-            tx.data = allowance_calldata.into();
-        })
-        .build_mainnet();
+    evm.modify_tx(|tx| tx.data = allowance_calldata.into());
 
     let ref_tx = evm.replay_commit().unwrap();
 
