@@ -31,8 +31,7 @@ sol!(
     }
 );
 
-#[tokio::main]
-async fn main() -> Result<()> {
+fn main() -> Result<()> {
     dotenv::dotenv().ok();
 
     // on chain addresses
@@ -86,17 +85,10 @@ async fn main() -> Result<()> {
         deadline: U256::MAX,
     }
     .abi_encode();
-
-    // set call to the router
-    let mut evm = Context::mainnet()
-        .with_db(&mut nodedb)
-        .modify_tx_chained(|tx| {
-            tx.caller = account;
-            tx.value = U256::ZERO;
-            tx.kind = TxKind::Call(uniswap_router);
-            tx.data = calldata.into();
-        })
-        .build_mainnet();
+    evm.modify_tx(|tx| {
+        tx.data = calldata.into();
+        tx.kind = TxKind::Call(uniswap_router);
+    });
 
     // if we can transact, add it as it is a valid pool. Else ignore it
     let ref_tx = evm.replay_commit().unwrap();

@@ -75,16 +75,7 @@ async fn main() -> Result<()> {
         spender: uniswap_router,
     }
     .abi_encode();
-
-    let mut evm = Context::mainnet()
-        .with_db(&mut nodedb_async)
-        .modify_tx_chained(|tx| {
-            tx.caller = account;
-            tx.kind = TxKind::Call(weth);
-            tx.value = U256::ZERO;
-            tx.data = allowance_calldata.into();
-        })
-        .build_mainnet();
+    evm.modify_tx(|tx| tx.data = allowance_calldata.into());
 
     let ref_tx = evm.replay_commit().unwrap();
 

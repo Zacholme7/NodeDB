@@ -14,8 +14,7 @@ use revm::{Context, ExecuteCommitEvm, ExecuteEvm, MainBuilder, MainContext};
 // Generate contract bindings
 sol!(Counter, "example/counter.json");
 
-#[tokio::main]
-async fn main() -> Result<()> {
+fn main() -> Result<()> {
     // dummy addresses
     let counter_address = address!("A5C381211A406b48A073E954e6949B0D49506bc0");
     let caller = address!("0000000000000000000000000000000000000001");
@@ -54,15 +53,7 @@ async fn main() -> Result<()> {
     evm.replay_commit().unwrap();
 
     let getcount_calldata = Counter::getCountCall {}.abi_encode();
-    let mut evm = Context::mainnet()
-        .with_db(&mut nodedb)
-        .modify_tx_chained(|tx| {
-            tx.caller = caller;
-            tx.kind = TxKind::Call(counter_address);
-            tx.data = getcount_calldata.into();
-            tx.value = U256::ZERO;
-        })
-        .build_mainnet();
+    evm.modify_tx(|tx| tx.data = getcount_calldata.into());
 
     let ref_tx = evm.replay().unwrap().result;
 

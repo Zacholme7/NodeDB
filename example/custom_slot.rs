@@ -1,6 +1,5 @@
 use std::path::Path;
-
-use alloy_primitives::{address, U256};
+use alloy_primitives::{address, Address, U256};
 use alloy_sol_types::{sol, SolCall, SolValue};
 use eyre::anyhow;
 use eyre::Result;
@@ -19,8 +18,7 @@ sol!(
     }
 );
 
-#[tokio::main]
-async fn main() -> Result<()> {
+fn main() -> Result<()> {
     // on chain addresses
     let account = address!("d8dA6BF26964aF9D7eEd9e03E53415D37aA96045");
     let weth = address!("C02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2");
@@ -47,7 +45,7 @@ async fn main() -> Result<()> {
     let mut evm = Context::mainnet()
         .with_db(&mut nodedb)
         .modify_tx_chained(|tx| {
-            tx.caller = account;
+            tx.caller = Address::ZERO;
             tx.value = U256::ZERO;
             tx.data = balance_calldata.into();
             tx.kind = TxKind::Call(weth);

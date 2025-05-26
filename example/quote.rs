@@ -1,6 +1,5 @@
 use std::path::Path;
-
-use alloy_primitives::{address, U256};
+use alloy_primitives::{address, U256, Address};
 use alloy_sol_types::{sol, SolCall, SolValue};
 use eyre::anyhow;
 use eyre::Result;
@@ -18,13 +17,10 @@ sol!(
     }
 );
 
-#[tokio::main]
-
-async fn main() -> Result<()> {
+fn main() -> Result<()> {
     dotenv::dotenv().ok();
 
     // on-chain addresses
-    let vitalik = address!("d8dA6BF26964aF9D7eEd9e03E53415D37aA96045");
     let weth = address!("C02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2");
     let usdc = address!("A0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48");
     let uniswap = address!("7a250d5630B4cF539739dF2C5dAcb4c659F2488D");
@@ -46,7 +42,7 @@ async fn main() -> Result<()> {
     let mut evm = Context::mainnet()
         .with_db(&mut nodedb)
         .modify_tx_chained(|tx| {
-            tx.caller = vitalik;
+            tx.caller = Address::ZERO;
             tx.value = U256::ZERO;
             tx.kind = TxKind::Call(uniswap);
             tx.data = out_call.into();

@@ -8,7 +8,7 @@ name = "swap"
 path = "example/swap.rs"
 
 [[bin]]
-name = "swap_async"
+name = "swap-async"
 path = "example/swap_async.rs"
 
 [[bin]]
@@ -28,11 +28,11 @@ name = "approval"
 path = "example/approval.rs"
 
 [[bin]]
-name = "approval_async"
+name = "approval-async"
 path = "example/approval_async.rs"
 
 [[bin]]
-name = "get_balance_slot"
+name = "get-balance-slot"
 path = "example/get_balance_slot.rs"
 
 [dependencies]
